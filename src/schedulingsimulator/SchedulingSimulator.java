@@ -2,7 +2,7 @@ package schedulingsimulator;
 
 /**
  * This is the main class. It reads the input file from the user,
- * initializes the scheduling process and, after it is finished,
+ * initializes the scheduling process and, after it has finished,
  * saves the result on the output file. 
  * 
  * @author igormartire
