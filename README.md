@@ -3,4 +3,4 @@ Trabalho final da disciplina TCC00232 - Técnicas de Projeto e Implementação d
 
 Não se esqueçam de fazer o Javadoc: https://en.wikipedia.org/wiki/Javadoc
 
-Versão atual do Diagrama de Classes: https://drive.google.com/file/d/0B21b-WHpR_S1ZFBGVllqb0lBOUk/view?usp=sharing
+Versão atual do Diagrama de Classes: https://drive.google.com/file/d/0B21b-WHpR_S1N0RRN3N5QmNiOXc/view?usp=sharing
