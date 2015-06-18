@@ -9,6 +9,7 @@ package schedulingsimulator;
  */
 public class SchedulingSimulator {
 	private Scheduler scheduler;
+	private EventsManager eventsManager;
 	private CPU cpu;
 	
 	/**
@@ -25,13 +26,9 @@ public class SchedulingSimulator {
 	 * @param args the arguments passed to the program. 
 	 */
 	public static void main(String[] args) {
-		CPU cpu = new CPU();
-		Scheduler scheduler = SchedulerFactory
-				.createScheduler("FIFO", cpu);
-		SchedulingSimulator simulator = 
-				new SchedulingSimulator(scheduler, cpu);
+		SchedulingSimulator simulator = new SchedulingSimulator();		
 		simulator.init(args[1]);
-		simulator.start();
+		simulator.run();
 		simulator.end();		
 	}
 	
@@ -41,9 +38,8 @@ public class SchedulingSimulator {
 	 * simulation
 	 * @param cpu the cpu that will be used in the simulation
 	 */
-	public SchedulingSimulator(Scheduler scheduler, CPU cpu) {
-		this.scheduler = scheduler;
-		this.cpu = cpu;		
+	public SchedulingSimulator() {		
+		this.cpu = new CPU();
 	}
 	
 	/**
@@ -61,17 +57,40 @@ public class SchedulingSimulator {
 	}
 	
 	/**
-	 * Starts the scheduling simulation.
+	 * Starts the scheduling simulation. Will stop when there are
+	 * no more events to handle.
 	 */
-	private void start() {
-		this.scheduler.start();
+	private void run() {
+		while ( this.getEventsManager().hasNextEvent() ) {
+			this.getEventsManager().dispatchNextEvent();
+		}
 	}
-	
+
 	/**
 	 * Saves the results of the scheduling process on the output 
 	 * file.
 	 */
 	private void end() {
 		// TODO implement SchedulingSimulator.end()
+	}
+
+	/** 
+	 * @return the simulator's events manager
+	 */
+	public EventsManager getEventsManager() {
+		if (this.eventsManager == null) {
+			this.eventsManager = new EventsManager(this);
+		}
+		return this.eventsManager;
+	}
+	
+	/** 
+	 * @return the simulator's scheduler
+	 */
+	public Scheduler getScheduler() {
+		if (this.scheduler == null) {
+			this.scheduler = SchedulerFactory.createScheduler("FIFO", this);
+		}
+		return this.scheduler;
 	}
 }

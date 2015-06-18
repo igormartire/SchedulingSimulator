@@ -1,7 +1,78 @@
 package schedulingsimulator;
 
-public class Event {
+public class Event implements Comparable<Event>{
 	public enum Type {
-		ARRIV, SCHED, EXEC, FINISH;
+		FINISH (0),
+		ARRIV  (1),
+		SCHED  (2),
+		EXEC   (3);		
+		
+		private int priorityOrder;
+
+		private Type(int priorityOrder) {
+			this.priorityOrder = priorityOrder;
+		}
+		
+		/**
+		 * A lower value means a higher priority ( as they say... less is more ;) )
+		 */
+		public int getPriorityOrder() {
+			return this.priorityOrder;
+		}
+	}
+
+	private Type type;
+	
+	private int time;
+	
+	private Process process;
+	
+	/**
+	 * Creates an event
+	 * @param type the event's type
+	 * @param time the time the event will happen
+	 * @param process the process the event refers to. 
+	 * If the event's type is SCHED, this parameter has no use.
+	 */
+	public Event(Type type, int time, Process process) {
+		this.type = type;
+		this.time = time;
+		this.process = process;
+	}
+	
+	/**
+	 * @return the event's type
+	 */
+	public Type getType() {
+		return this.type;
+	}
+	
+	/**
+	 * @return the time the event will happen
+	 */
+	public int getTime() {
+		return this.time;
+	}
+	
+	/**  
+	 * @return the process the event refers to 
+	 */
+	public Process getProcess() {
+		return this.process;
+	}
+	
+	/**
+	 * @return a negative integer, zero, or a positive integer as 
+	 * this event's priority is higher than, equal to, or lower than
+	 * the specified event's priority.
+	 */
+	@Override
+	public int compareTo(Event event) {
+		if (this.time != event.getTime()) {
+			return this.time - event.getTime();
+		}
+		else {
+			return this.type.getPriorityOrder() - event.getType().getPriorityOrder();
+		}
 	}
 }

@@ -10,19 +10,10 @@ public class Scheduler {
 	private SchedulingStrategy schedulingAlgorithm;
 	
 	/**
-	 * The CPU that will be used to run the processes.
+	 * The simulator this scheduler belongs to.
 	 */
-	private CPU cpu;
-	
-	/**
-	 * The queue where the events are stored while waiting to 
-	 * happen. They should be ordered by descending priority.
-	 * Who guarantees this order is the 
-	 * {@link #addEvent(Event event)} method.
-	 * @see #addEvent(Event event)
-	 */
-	private List<Event> eventsQueue;
-	
+	private SchedulingSimulator simulator;
+			
 	/**
 	 * The queue where the processes are stored while waiting
 	 * to be scheduled. They should be in order of arrival.
@@ -44,55 +35,45 @@ public class Scheduler {
 	 * algorithm and cpu.
 	 * @param schedulingAlgorithm the scheduling algorithm to be used
 	 * by the scheduler when handling an SCHED Event.
-	 * @param cpu the cpu to which the processes will be sent to run.
+	 * @param simulator the simulator this scheduler belongs to
 	 */
 	public Scheduler(SchedulingStrategy schedulingAlgorithm, 
-			CPU cpu) {
+			SchedulingSimulator simulator) {
 		this.schedulingAlgorithm = schedulingAlgorithm;
-		this.cpu = cpu;
+		this.simulator = simulator;
 	}
 	
 	/**
-	 * Starts the scheduler. Then, it will only stop when there
-	 * are no more events to handle.
-	 */
-	public void start() {
-		while ( hasNextEvent() ) {
-			handleNextEvent();
-		}
-	}
-	
-	/**
-	 * TODO write javadoc for Scheduler.addEvent(Event event)
+	 * Write javadoc for Scheduler.handleFinishEvent(Event event)
 	 * @param event
 	 */
-	public void addEvent(Event event) {
-		// TODO implement Scheduler.addEvent(Event event)
-	}
-
-	/**
-	 * Check if there is an event in the Events Queue.
-	 * @return true if there is at least one event in the Events
-	 * Queue, false otherwise.
-	 */
-	private boolean hasNextEvent() {		
-		return !eventsQueue.isEmpty();
+	public void handleFinishEvent(Event event) {
+		//TODO implement Scheduler.handleFinishEvent(Event event)
 	}
 	
 	/**
-	 * TODO write javadoc for Scheduler.handleNextEvent()
+	 * Write javadoc for Scheduler.handleArrivEvent(Event event)
+	 * @param event
 	 */
-	private void handleNextEvent() {
-		// TODO implement Scheduler.handleNextEvent()		
+	public void handleArrivEvent(Event event) {
+		//TODO implement Scheduler.handleArrivEvent(Event event)
 	}
 	
 	/**
-	 * Getter method for the {@link #eventsQueue} field.
-	 * @return the scheduler's events queue
+	 * Write javadoc for Scheduler.handleSchedEvent(Event event)
+	 * @param event
 	 */
-	public List<Event> getEventsQueue() {
-		return this.eventsQueue;
+	public void handleSchedEvent(Event event) {
+		//TODO implement Scheduler.handleSchedEvent(Event event)
 	}
+	
+	/**
+	 * Write javadoc for Scheduler.handleExecEvent(Event event)
+	 * @param event
+	 */
+	public void handleExecEvent(Event event) {
+		//TODO implement Scheduler.handleExecEvent(Event event)
+	}	
 	
 	/**
 	 * Getter method for the {@link #schedulerQueue} field.
@@ -105,14 +86,6 @@ public class Scheduler {
 	/**
 	 * Getter method for the {@link #readyQueue} field.
 	 * @return the scheduler's ready queue
-	 */
-	public List<Process> getReadyQueue() {
-		return this.readyQueue;
-	}
-	
-	/**
-	 * Getter method for the {@link #cpu} field.
-	 * @return the cpu that is used by this scheduler.
 	 */
 	public List<Process> getReadyQueue() {
 		return this.readyQueue;

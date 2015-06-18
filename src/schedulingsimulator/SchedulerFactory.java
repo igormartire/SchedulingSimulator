@@ -9,10 +9,10 @@ public class SchedulerFactory {
 	 * algorithm that will be used to schedule the processes.
 	 * It can be "FIFO", "SJN" (Shortest Job Next) or "SRT" 
 	 * (Shortest Remaining Time).
-	 * @param cpu the cpu that will be used to run the processes.
+	 * @param simulator the simulator the scheduler will belong to
 	 * @return the created scheduler
 	 */
-	public static Scheduler createScheduler(String algorithm, CPU cpu) {
+	public static Scheduler createScheduler(String algorithm, SchedulingSimulator simulator) {
 		// TODO implement SchedulerFactory.createScheduler(String algorithm, CPU cpu)
 		return null;
 	}
