@@ -5,6 +5,7 @@ import java.util.PriorityQueue;
 public class EventsManager {
 	
 	private SchedulingSimulator simulator;
+	private EventsLogger log;
 	
 	/**
 	 * The queue where the events are stored while waiting to 
@@ -48,6 +49,7 @@ public class EventsManager {
 	 */
 	public void dispatchNextEvent() {
 		Event event = nextEvent();
+		logEvent(event);
 		switch (event.getType()) {
 		case FINISH:
 			this.simulator.getScheduler().handleFinishEvent(event);
@@ -60,6 +62,26 @@ public class EventsManager {
 			break;
 		case EXEC:
 			this.simulator.getScheduler().handleExecEvent(event);
+			break;
+		}
+	}
+	
+	private void logEvent(Event event) {
+		switch (event.getType()) {
+		case FINISH:
+			this.log.addStop();			
+			
+			/*PROBLEMA: Se processo sair da CPU à força, ou seja, um processo tira ele, desagendando o evento FINISH, então não será logado por aqui*/
+			
+			break;
+		case ARRIV:
+			//don't log
+			break;
+		case SCHED:
+			//don't log
+			break;
+		case EXEC:
+			LogEntry logEntry = new LogEntry(event.getProcess().getId(), event.getTime());
 			break;
 		}
 	}

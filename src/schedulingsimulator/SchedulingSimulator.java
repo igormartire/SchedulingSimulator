@@ -1,5 +1,9 @@
 package schedulingsimulator;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 /**
  * This is the main class. It reads the input file from the user,
  * initializes the scheduling process and, after it has finished,
@@ -26,10 +30,14 @@ public class SchedulingSimulator {
 	 * @param args the arguments passed to the program. 
 	 */
 	public static void main(String[] args) {
-		SchedulingSimulator simulator = new SchedulingSimulator();		
-		simulator.init(args[1]);
-		simulator.run();
-		simulator.end();		
+		SchedulingSimulator simulator = new SchedulingSimulator();
+		try {
+			simulator.init(args[0]);
+			simulator.start();
+			simulator.end();
+		} catch (FileNotFoundException e) {
+			System.err.println(e.getMessage());
+		}		
 	}
 	
 	/**
@@ -49,18 +57,40 @@ public class SchedulingSimulator {
 	 * process.
 	 * <p>
 	 * Call this before starting the scheduler. 
-	 * @param inputFilePath a string representing the path to the
-	 * input file
+	 * @param inputFilePath a string representing the path
+	 * to the input file
+	 * @throws FileNotFoundException if the file specified was not found
 	 */
-	private void init(String inputFilePath) {
-		// TODO implement SchedulingSimulator.init()
+	private void init(String inputFilePath) throws FileNotFoundException {
+		
+		Scanner file = new Scanner( new File(inputFilePath) );
+		
+		// While there is another process
+		while ( file.hasNext() ) {
+			
+			//Creates the process
+			String id = file.next();
+			int executionTime = file.nextInt(); 
+			Process process = new Process(id, executionTime);
+			
+			//Creates the process arrival event
+			int arrivTime =  file.nextInt();
+			Event event = new Event(Event.Type.ARRIV, arrivTime, process);
+			
+			//Adds the event into the Events Queue
+			this.getEventsManager().addEvent(event);
+			
+		}
+		
+		file.close();
+		
 	}
 	
 	/**
 	 * Starts the scheduling simulation. Will stop when there are
 	 * no more events to handle.
 	 */
-	private void run() {
+	private void start() {
 		while ( this.getEventsManager().hasNextEvent() ) {
 			this.getEventsManager().dispatchNextEvent();
 		}
