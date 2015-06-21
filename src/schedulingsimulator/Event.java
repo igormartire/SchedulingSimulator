@@ -4,8 +4,7 @@ public class Event implements Comparable<Event>{
 	public enum Type {
 		FINISH (0),
 		ARRIV  (1),
-		SCHED  (2),
-		EXEC   (3);		
+		SCHED  (2);		
 		
 		private int priorityOrder;
 

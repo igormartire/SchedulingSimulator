@@ -3,7 +3,7 @@ package schedulingsimulator;
 import java.util.List;
 import java.util.Queue;
 
-public class ShortestRemainingTime implements SchedulingPolicy {
+public class FCFS implements SchedulingPolicy {
 
 	@Override
 	public boolean schedule(Queue<Process> schedulerQueue,

@@ -1,9 +1,5 @@
 package schedulingsimulator;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
-
 /**
  * This is the main class. It reads the input file from the user,
  * initializes the scheduling process and, after it has finished,
@@ -13,8 +9,10 @@ import java.util.Scanner;
  */
 public class SchedulingSimulator {
 	private Scheduler scheduler;
-	private EventsManager eventsManager;
+	private EventsQueue events;
+	private Log log;
 	private CPU cpu;
+	private int time;
 	
 	/**
 	 * The very start point of the program. 
@@ -30,24 +28,23 @@ public class SchedulingSimulator {
 	 * @param args the arguments passed to the program. 
 	 */
 	public static void main(String[] args) {
-		SchedulingSimulator simulator = new SchedulingSimulator();
-		try {
-			simulator.init(args[0]);
-			simulator.start();
-			simulator.end();
-		} catch (FileNotFoundException e) {
-			System.err.println(e.getMessage());
-		}		
+		SchedulingSimulator simulator = new SchedulingSimulator("FCFS");		
+		simulator.run(args[0]);
 	}
 	
-	/**
-	 * SchedulingSimulator's constructor
-	 * @param scheduler the scheduler that will be used in the 
-	 * simulation
-	 * @param cpu the cpu that will be used in the simulation
-	 */
-	public SchedulingSimulator() {		
-		this.cpu = new CPU();
+	public SchedulingSimulator(String algorithm) {
+		CPU cpu = new CPU();
+		this.cpu = cpu;
+		this.scheduler = SchedulerFactory.createScheduler(algorithm, cpu);
+		this.events = new EventsQueue();
+		this.log = new Log();
+		this.time = 0;
+	}
+	
+	public void run(String inputFilePath) {
+		this.init(inputFilePath);
+		this.start();
+		this.end();
 	}
 	
 	/**
@@ -61,29 +58,8 @@ public class SchedulingSimulator {
 	 * to the input file
 	 * @throws FileNotFoundException if the file specified was not found
 	 */
-	private void init(String inputFilePath) throws FileNotFoundException {
-		
-		Scanner file = new Scanner( new File(inputFilePath) );
-		
-		// While there is another process
-		while ( file.hasNext() ) {
-			
-			//Creates the process
-			String id = file.next();
-			int executionTime = file.nextInt(); 
-			Process process = new Process(id, executionTime);
-			
-			//Creates the process arrival event
-			int arrivTime =  file.nextInt();
-			Event event = new Event(Event.Type.ARRIV, arrivTime, process);
-			
-			//Adds the event into the Events Queue
-			this.getEventsManager().addEvent(event);
-			
-		}
-		
-		file.close();
-		
+	private void init(String inputFilePath){
+		// TODO implement SchedulingSimulator.init()
 	}
 	
 	/**
@@ -91,8 +67,47 @@ public class SchedulingSimulator {
 	 * no more events to handle.
 	 */
 	private void start() {
-		while ( this.getEventsManager().hasNextEvent() ) {
-			this.getEventsManager().dispatchNextEvent();
+		while ( this.events.hasNext() ) {
+			Event newEvent = this.events.next();
+			int elapsedTime = newEvent.getTime() - this.time;
+			this.cpu.runFor(elapsedTime);
+			this.time += elapsedTime;
+			this.handleEvent(newEvent);			
+		}
+	}
+	
+	private void handleEvent(Event event) {
+		switch(event.getType()) {
+		case ARRIV:
+			this.scheduler.addProcess(event.getProcess());
+			this.events.add(new Event(Event.Type.SCHED, event.getTime(), null));
+			break;		
+		case SCHED:
+			Process preScheduleRunningProcess = this.cpu.getProcess();
+			this.scheduler.schedule();
+			Process currentRunningProcess = this.cpu.getProcess();
+			
+			//Se houve mudança do processo executado na CPU
+			if (preScheduleRunningProcess != currentRunningProcess) {
+				
+				//Se antes havia um processo sendo executado
+				if (preScheduleRunningProcess != null) {
+					this.events.remove(new Event(Event.Type.FINISH, this.time + preScheduleRunningProcess.getBurstTime(), preScheduleRunningProcess));
+					this.log.addExecutionStop(this.time, false);
+				}
+				
+				//Se um novo processo processo passou a ser executado
+				if (currentRunningProcess != null) {
+					this.events.add(new Event(Event.Type.FINISH, this.time + currentRunningProcess.getBurstTime(), currentRunningProcess));
+					this.log.addExecutionStart(currentRunningProcess, this.time);
+				}
+			}
+			break;
+		case FINISH:			
+			this.cpu.setProcess(null);			
+			this.events.add(new Event(Event.Type.SCHED, event.getTime(), null));
+			this.log.addExecutionStop(this.time, true);
+			break;
 		}
 	}
 
@@ -102,25 +117,5 @@ public class SchedulingSimulator {
 	 */
 	private void end() {
 		// TODO implement SchedulingSimulator.end()
-	}
-
-	/** 
-	 * @return the simulator's events manager
-	 */
-	public EventsManager getEventsManager() {
-		if (this.eventsManager == null) {
-			this.eventsManager = new EventsManager(this);
-		}
-		return this.eventsManager;
-	}
-	
-	/** 
-	 * @return the simulator's scheduler
-	 */
-	public Scheduler getScheduler() {
-		if (this.scheduler == null) {
-			this.scheduler = SchedulerFactory.createScheduler("FIFO", this);
-		}
-		return this.scheduler;
-	}
+	}	
 }

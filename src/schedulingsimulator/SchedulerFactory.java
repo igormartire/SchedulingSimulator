@@ -12,7 +12,7 @@ public class SchedulerFactory {
 	 * @param simulator the simulator the scheduler will belong to
 	 * @return the created scheduler
 	 */
-	public static Scheduler createScheduler(String algorithm, SchedulingSimulator simulator) {
+	public static Scheduler createScheduler(String algorithm, CPU cpu) {
 		// TODO implement SchedulerFactory.createScheduler(String algorithm, CPU cpu)
 		return null;
 	}
