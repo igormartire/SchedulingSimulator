@@ -74,4 +74,16 @@ public class Event implements Comparable<Event>{
 			return this.type.getPriorityOrder() - event.getType().getPriorityOrder();
 		}
 	}
+	
+	public boolean equals(Object other) {
+		if (this == other) return true;
+		else if (!(other instanceof Event)) return false;
+		else return this.compareTo((Event)other) == 0; 
+	}
+	
+	@Override
+	public String toString() {
+		return "{"+this.type+"("+this.time+")"+
+				(this.process != null ? "->"+this.process+"}" : "}");
+	}
 }

@@ -21,4 +21,8 @@ public class CPU {
 			this.process.runFor(elapsedTime);
 		}		
 	}
+
+	public void println() {
+		System.out.println(this.process);		
+	}
 }

@@ -1,11 +1,12 @@
 package schedulingsimulator;
 
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 
-public class Log {
-	
-	public class Entry {	
+public class Log implements Iterable<Log.Entry> {
+
+	public static class Entry {	
 		private String processId;
 		private int execStartTime;
 		private int execStopTime;
@@ -36,13 +37,17 @@ public class Log {
 		public boolean isFinished() {
 			return this.finished;
 		}
+		
+		@Override
+		public String toString() {
+			return this.processId+"\t"+
+				this.execStartTime+"\t"+
+				this.execStopTime+"\t"+
+				(this.finished ? 1 : 0);
+		}
 	}
 	
-	private Deque<Entry> log;
-	
-	public Log() {
-		this.log = new LinkedList<Entry>();
-	}
+	private Deque<Entry> log = new LinkedList<Entry>();
 	
 	public void addExecutionStart(Process p, int execStartTime) {
 		Entry newEntry = new Entry(p.getId(), execStartTime);
@@ -53,4 +58,10 @@ public class Log {
 		Entry lastEntry = this.log.getLast();
 		lastEntry.setStopInfo(execStopTime, finished);
 	}
+
+	@Override
+	public Iterator<Entry> iterator() {
+		return this.log.iterator();
+	}
+	
 }

@@ -1,22 +1,26 @@
 package schedulingsimulator;
 
-import java.util.PriorityQueue;
+import java.util.Arrays;
 
 public class EventsQueue {
 	
-	private PriorityQueue<Event> eventsQueue;
+	private OrderedPriorityQueue<Event> eventsQueue;
 	
 	public EventsQueue() {
-		this.eventsQueue = new PriorityQueue<Event>();
+		this.eventsQueue = new OrderedPriorityQueue<Event>();
 	}
 	
 	public boolean add(Event event) {
 		//só permite um SCHED para o mesmo tempo
-		if ( (event.getType() == Event.Type.SCHED) && (this.eventsQueue.contains(event)) ) { 
-			System.out.println("DEBUG: new SCHED addition correctly ignored. :)");
+		if ( (event.getType() == Event.Type.SCHED) && (this.eventsQueue.contains(event)) ) {
 			return false;
 		}		
 		return this.eventsQueue.add(event);
+	}
+	
+	//DEBUG
+	public void println() {
+		System.out.println(Arrays.toString(this.eventsQueue.toArray()));
 	}
 	
 	/**
@@ -30,10 +34,10 @@ public class EventsQueue {
 	
 	public Event next() {
 		return this.eventsQueue.poll();
-	}
-	
+	}	
 	
 	public void remove(Event event) {
 		this.eventsQueue.remove(event);
 	}
+	
 }

@@ -1,15 +1,15 @@
 package schedulingsimulator;
 
-import java.util.List;
-import java.util.Queue;
-
 public class ShortestRemainingTime implements SchedulingPolicy {
 
 	@Override
-	public boolean schedule(Queue<Process> schedulerQueue,
-			List<Process> readyQueue, CPU cpu) {
-		// TODO Auto-generated method stub
-		return false;
+	public int compare(Process p1, Process p2) {
+		return p1.getBurstTime() - p2.getBurstTime();
+	}
+
+	@Override
+	public boolean isPreemptive() {
+		return true;
 	}
 
 }

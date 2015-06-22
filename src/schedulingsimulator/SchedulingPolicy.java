@@ -1,8 +1,11 @@
 package schedulingsimulator;
 
-import java.util.List;
-import java.util.Queue;
+import java.util.Comparator;
 
-public interface SchedulingPolicy {
-	public boolean schedule(Queue<Process> schedulerQueue, List<Process> readyQueue, CPU cpu);
+public interface SchedulingPolicy extends Comparator<Process> {
+	
+	//public boolean schedule(Queue<Process> schedulerQueue, Queue<Process> readyQueue, CPU cpu);
+	
+	public boolean isPreemptive();
+	
 }

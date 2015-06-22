@@ -21,4 +21,8 @@ public class Process {
 		this.burstTime -= elapsedTime;
 	}
 	
+	@Override
+	public String toString() {
+		return this.id+"("+this.burstTime+")";
+	}
 }

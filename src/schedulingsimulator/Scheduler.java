@@ -1,5 +1,6 @@
 package schedulingsimulator;
 
+import java.util.Arrays;
 import java.util.Queue;
 import java.util.LinkedList;
 
@@ -21,13 +22,20 @@ public class Scheduler {
 	 * to be executed. They should be ordered by descending priority
 	 * of execution. Who guarantees this order is the 
 	 * {@link #schedulingPolicy}.
-	 */
-	
-	//LinkedList, pois só ela é List e Queue ao mesmo tempo
-	//sem adicionar mais complexidade do que o necessário.
-	private LinkedList<Process> readyQueue;
+	 */	
+	private OrderedPriorityQueue<Process> readyQueue;
 	
 	private CPU cpu;	
+	
+	//DEBUG
+	public void printlnSchedQueue() {
+		System.out.println(Arrays.toString(this.schedulerQueue.toArray()));	
+	}
+
+	//DEBUG	
+	public void printlnReadyQueue() {
+		System.out.println(Arrays.toString(this.readyQueue.toArray()));		
+	}		
 	
 	/**
 	 * Instantiates a scheduler with the specified scheduling
@@ -40,7 +48,7 @@ public class Scheduler {
 		this.schedulingPolicy = schedulingPolicy;
 		this.cpu = cpu;
 		this.schedulerQueue = new LinkedList<Process>();
-		this.readyQueue = new LinkedList<Process>();
+		this.readyQueue = new OrderedPriorityQueue<Process>(schedulingPolicy);
 	}	
 	
 	public void addProcess(Process process) {
@@ -48,14 +56,35 @@ public class Scheduler {
 	}
 	
 	public void schedule() {
-		boolean execNewProcess = this.schedulingPolicy.schedule(
-				this.schedulerQueue, this.readyQueue, this.cpu);
+		
+		while ( ! schedulerQueue.isEmpty() ) {
+			readyQueue.add( schedulerQueue.poll() );						
+		}
+		
+		boolean execNewProcess;
+		
+		if ( this.readyQueue.isEmpty() ) {
+			execNewProcess = false;
+		}
+		else {
+			//There is a process on the ready queue
+			if ( this.cpu.isEmpty() ) {
+				execNewProcess = true;
+			}
+			else {
+				//The cpu is being used by another process
+				if ( ! this.schedulingPolicy.isPreemptive() ) {
+					execNewProcess = false;
+				}				
+				else {
+					//The scheduling process is preemptive					
+					execNewProcess = this.schedulingPolicy.compare(readyQueue.peek(), cpu.getProcess()) < 0;
+				}
+			}
+		}
+		
 		if (execNewProcess) {
 			this.cpu.setProcess(this.readyQueue.poll());
 		}
-	}
-	
-	public void setPolicy(SchedulingPolicy schedulingPolicy) {
-		this.schedulingPolicy = schedulingPolicy;
 	}
 }
