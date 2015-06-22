@@ -1,15 +1,15 @@
 package schedulingsimulator;
 
-public class ShortestRemainingTime implements SchedulingPolicy {
+public class FCFS implements SchedulingPolicy {
 
 	@Override
 	public int compare(Process p1, Process p2) {
-		return p1.getBurstTime() - p2.getBurstTime();
+		return 0;
 	}
 
 	@Override
 	public boolean isPreemptive() {
-		return true;
+		return false;
 	}
 
 }

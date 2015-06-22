@@ -4,8 +4,7 @@ public class Event implements Comparable<Event>{
 	public enum Type {
 		FINISH (0),
 		ARRIV  (1),
-		SCHED  (2),
-		EXEC   (3);		
+		SCHED  (2);		
 		
 		private int priorityOrder;
 
@@ -74,5 +73,17 @@ public class Event implements Comparable<Event>{
 		else {
 			return this.type.getPriorityOrder() - event.getType().getPriorityOrder();
 		}
+	}
+	
+	public boolean equals(Object other) {
+		if (this == other) return true;
+		else if (!(other instanceof Event)) return false;
+		else return this.compareTo((Event)other) == 0; 
+	}
+	
+	@Override
+	public String toString() {
+		return "{"+this.type+"("+this.time+")"+
+				(this.process != null ? "->"+this.process+"}" : "}");
 	}
 }
