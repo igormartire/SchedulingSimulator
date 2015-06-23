@@ -18,11 +18,6 @@ public class EventsQueue {
 		return this.eventsQueue.add(event);
 	}
 	
-	//DEBUG
-	public void println() {
-		System.out.println(Arrays.toString(this.eventsQueue.toArray()));
-	}
-	
 	/**
 	 * Checks if there is an event in the Events Queue.
 	 * @return true if there is at least one event in the Events
@@ -40,4 +35,8 @@ public class EventsQueue {
 		this.eventsQueue.remove(event);
 	}
 	
+	@Override
+	public String toString() {
+		return "EVENTS: "+Arrays.toString(this.eventsQueue.toArray());
+	}
 }

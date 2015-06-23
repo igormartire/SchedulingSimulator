@@ -1,10 +1,7 @@
 package schedulingsimulator;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.Scanner;
+import java.text.ParseException;
 
 /**
  * This is the main class. It reads the input file from the user,
@@ -14,45 +11,76 @@ import java.util.Scanner;
  * @author igormartire
  */
 public class SchedulingSimulator {
+	
+	private static final String OUTPUT_FILE_PATH = "output.txt";
+	
 	private Scheduler scheduler;
 	private EventsQueue events;
 	private Log log;
 	private CPU cpu;
 	private int time;
+	private boolean verbose = false;
 	
 	/**
 	 * The very start point of the program. 
 	 * <p>
 	 * The user must pass the input file's path as the first 
-	 * parameter. Any aditional parameters that the user, in 
-	 * its own delusion, might try to pass, will be completely 
-	 * and pleasantly ignored.
+	 * parameter, and, optionally, the scheduling policy as 
+	 * the second. Also optionally, as the third paramenter, 
+	 * the user may pass "--verbose" to toggle verbose mode on. 
+	 * Any aditional parameters the user, in its own delusion,
+	 * might try to pass, will be completely and pleasantly ignored.
 	 * <p>
 	 * This function creates a SchedulingSimulator, initially
 	 * populated with the processes and events taken from the
 	 * input file.
 	 * @param args the arguments passed to the program.
-	 * @throws FileNotFoundException 
-	 * @throws UnsupportedEncodingException 
 	 */
-	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
-		SchedulingSimulator simulator = new SchedulingSimulator("FCFS");
-		simulator.run(args[0]);
+	public static void main(String[] args) {
+		if (args.length == 0) {
+			System.out.println("Arquivo de entrada não especificado.");
+		}
+		else {
+			String schedulingPolicy = null;
+			boolean verbose = false;
+			if (args.length >= 2) {
+				schedulingPolicy = args[1];
+				if ( ! SchedulerFactory.validateSchedulingPolicyName(schedulingPolicy) ) {
+					System.out.println("<"+schedulingPolicy+"> não é uma política de escalonamento válida.");
+					return;
+				}
+				if (args.length >= 3 && args[2].equals("--verbose")) {
+					verbose = true;
+				}
+			}
+			SchedulingSimulator simulator = new SchedulingSimulator(schedulingPolicy, verbose);
+			try {
+				simulator.run(args[0]);
+			}
+			catch (FileNotFoundException ex) {
+				System.out.println("Arquivo de entrada não encontrado.");
+			}
+			catch (ParseException ex) {
+				System.out.println(ex.getMessage());
+				System.out.println("Falha na linha: "+ex.getErrorOffset());
+			}
+		}
 	}
 	
-	public SchedulingSimulator(String policy) {
+	public SchedulingSimulator(String schedulingPolicy, boolean verbose) {
 		CPU cpu = new CPU();
 		this.cpu = cpu;
-		this.scheduler = SchedulerFactory.createScheduler(policy, cpu);
+		this.scheduler = SchedulerFactory.createScheduler(schedulingPolicy, cpu);
 		this.events = new EventsQueue();
 		this.log = new Log();
 		this.time = 0;
+		this.verbose = verbose;
 	}
 	
-	public void run(String inputFilePath) throws FileNotFoundException, UnsupportedEncodingException {
+	public void run(String inputFilePath) throws FileNotFoundException, ParseException {
 		this.init(inputFilePath);		
 		this.start();
-		this.end();
+		this.end(OUTPUT_FILE_PATH);
 	}
 	
 	/**
@@ -65,31 +93,13 @@ public class SchedulingSimulator {
 	 * @param inputFilePath a string representing the path
 	 * to the input file
 	 * @throws FileNotFoundException if the file specified was not found
+	 * @throws ParseException 
+	 * @throws IllegalArgumentException 
 	 */
-	private void init(String inputFilePath) throws FileNotFoundException {
-		try ( Scanner scanner = new Scanner( new File(inputFilePath), "UTF-8" ) ) {
-			while ( scanner.hasNext()) {
-				String processId = scanner.next();
-				int burstTime = scanner.nextInt();
-				int arrivTime = scanner.nextInt();
-				Process process = new Process(processId, burstTime);
-				Event event = new Event(Event.Type.ARRIV, arrivTime, process);
-				this.events.add(event);
-			}
+	private void init(String inputFilePath) throws FileNotFoundException, ParseException {
+		for (Event event : DAO.getInstance().getEventsFromFile(inputFilePath)) {
+			this.events.add(event);
 		}
-	}
-	
-	private void debug() {
-		System.out.println("Time: "+this.time);
-		System.out.print("EVENTS: ");
-		this.events.println();		
-		System.out.print("SCHEDQ: ");
-		this.scheduler.printlnSchedQueue();
-		System.out.print("READYQ: ");
-		this.scheduler.printlnReadyQueue();		
-		System.out.print("C.P.U.: ");
-		this.cpu.println();
-		System.out.println();
 	}
 	
 	/**
@@ -97,14 +107,16 @@ public class SchedulingSimulator {
 	 * no more events to handle.
 	 */
 	private void start() {
+		if (verbose) System.out.println("Início do escalonamento\n");
 		while ( this.events.hasNext() ) {		
-			debug();
+			if (verbose) System.out.println(this+"\n");
 			Event newEvent = this.events.next();
 			int elapsedTime = newEvent.getTime() - this.time;
 			this.cpu.runFor(elapsedTime);
 			this.time += elapsedTime;
 			this.handleEvent(newEvent);
 		}
+		if (verbose) System.out.println(this + "\n\nFim do escalonamento\n");
 	}
 	
 	private void handleEvent(Event event) {		
@@ -154,11 +166,17 @@ public class SchedulingSimulator {
 	 * @throws UnsupportedEncodingException 
 	 * @throws FileNotFoundException 
 	 */
-	private void end() throws FileNotFoundException, UnsupportedEncodingException {
-		try ( PrintWriter writer = new PrintWriter( "output.txt", "UTF-8" ) ) {
-			for ( Log.Entry entry : this.log) {
-				writer.println(entry);
-			}
-		}
-	}	
+	private void end(String outputFilePath) throws FileNotFoundException {
+		DAO.getInstance().writeLogToFile(this.log, outputFilePath);
+	}
+	
+	@Override
+	public String toString() {
+		String s;
+		s  = "Time: "+this.time+"\n";
+		s += this.events+"\n";
+		s += this.scheduler+"\n";
+		s += this.cpu;
+		return s;
+	}
 }

@@ -27,16 +27,6 @@ public class Scheduler {
 	
 	private CPU cpu;	
 	
-	//DEBUG
-	public void printlnSchedQueue() {
-		System.out.println(Arrays.toString(this.schedulerQueue.toArray()));	
-	}
-
-	//DEBUG	
-	public void printlnReadyQueue() {
-		System.out.println(Arrays.toString(this.readyQueue.toArray()));		
-	}		
-	
 	/**
 	 * Instantiates a scheduler with the specified scheduling
 	 * algorithm and cpu.
@@ -86,5 +76,13 @@ public class Scheduler {
 		if (execNewProcess) {
 			this.cpu.setProcess(this.readyQueue.poll());
 		}
+	}
+	
+	@Override
+	public String toString() {
+		String s;
+		s  = "SCHEDQ: "+Arrays.toString(this.schedulerQueue.toArray())+"\n";
+		s += "READYQ: "+Arrays.toString(this.readyQueue.toArray());
+		return s;
 	}
 }

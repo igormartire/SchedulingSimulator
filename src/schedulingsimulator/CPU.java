@@ -22,7 +22,8 @@ public class CPU {
 		}		
 	}
 
-	public void println() {
-		System.out.println(this.process);		
+	@Override
+	public String toString() {
+		return "C.P.U.: "+this.process;		
 	}
 }
