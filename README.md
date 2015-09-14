@@ -1,3 +1,22 @@
+Hi, Whatsapp!! =D
+=================
+
+So, this was a project for one of the classes I took in my university in Brazil during the last semester.
+
+The goal was to implement a Process Scheduling Simulator with some specific constraints detailed by the professor.
+
+We were learning about Design Patterns and had to use some of them in the project.
+
+This implementation was a success. :)
+
+In order to facilitate the understanding, here is a class diagram: https://dl.dropboxusercontent.com/u/78349307/classDiagram.png
+
+Hope you like it. ;)
+
+Bye
+
+--------------------------------------------
+
 Divisão de tarefas:
 ===================
 
