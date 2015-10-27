@@ -1,4 +1,4 @@
-Hi, Whatsapp!! =D
+Hello there!! =D
 =================
 
 So, this was a project for one of the classes I took in my university in Brazil during the last semester.
